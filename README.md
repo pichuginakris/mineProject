@@ -1,54 +1,141 @@
-# React + TypeScript + Vite
+# Визуализация схемы шахты
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Интерактивное веб-приложение для просмотра и анализа трёхмерных моделей шахт на основе файлов MIM_Scheme.xml.
 
-Currently, two official plugins are available:
+![Экран загрузки файла](public/mainPage.png)
+![3D-визуализация шахты](public/minePage.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Описание
 
-## Expanding the ESLint configuration
+Приложение позволяет загружать файлы MIM_Scheme.xml, содержащие данные о структуре шахты, и визуализировать их в трехмерном пространстве. Пользователь может исследовать трехмерную модель шахты, просматривать статистику и информацию о различных горизонтах.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Основные возможности
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Загрузка файлов MIM_Scheme.xml (поддержка кодировки Windows-1251)
+- Загрузка демонстрационного файла для ознакомления с функционалом
+- Интерактивная 3D-визуализация шахты с использованием Three.js
+- Отображение статистики (количество узлов, секций, выработок, горизонтов)
+- Отображение списка горизонтов с цветовой маркировкой
+- Навигация и масштабирование в 3D-пространстве
+- Возможность сброса вида камеры к исходному положению
+
+## Технический стек
+
+- **React** - основной фреймворк для построения пользовательского интерфейса
+- **TypeScript** - типизированный JavaScript для улучшения качества кода
+- **MobX** - библиотека для управления состоянием приложения
+- **Three.js** - библиотека для отображения 3D-графики в браузере
+- **Tailwind CSS** - фреймворк для быстрой стилизации компонентов
+
+## Архитектура проекта
+
+### Компоненты
+
+- **MineVisualization** - корневой компонент, управляющий переключением между загрузкой файла и 3D-визуализацией
+- **FileUploader** - компонент для загрузки файлов MIM_Scheme.xml
+- **MineRenderer** - компонент для отображения 3D-модели шахты
+- **MineControls** - панель управления с информацией и элементами управления
+- **MineStatistics** - отображение статистики по загруженной модели
+- **HorizonsList** - отображение списка горизонтов с цветовой маркировкой
+
+### Хуки и утилиты
+
+- **useThreeScene** - хук для инициализации и управления сценой Three.js
+- **useCreateMineModel** - хук для создания и обновления 3D-модели шахты
+- **xmlParser** - утилиты для разбора файлов XML и извлечения данных о шахте
+- **threeHelpers** - вспомогательные функции для работы с Three.js
+- **threeCleanup** - утилиты для корректного освобождения ресурсов Three.js
+
+### Хранилище данных (MobX)
+
+- **MineStore** - хранилище данных о шахте и состоянии приложения
+- **StoreContext** - React-контекст для доступа к хранилищу из компонентов
+
+### Структура данных шахты
+
+- **Горизонты (Horizons)** - уровни шахты на определенной высоте
+- **Секции (Sections)** - сегменты тоннелей, соединяющие два узла
+- **Узлы (Nodes)** - точки в 3D-пространстве с координатами
+- **Выработки (Excavations)** - группы секций, образующие логические единицы (тоннели, штреки и т.д.)
+
+## Начало работы
+
+### Установка зависимостей
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Запуск в режиме разработки
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run dev
 ```
+
+Приложение будет доступно по адресу: http://localhost:5173
+
+### Сборка проекта
+
+```bash
+npm run build
+```
+
+### Запуск собранной версии
+
+```bash
+npm run preview
+```
+
+## Использование приложения
+
+1. **Загрузка файла**
+    - Нажмите кнопку "Загрузить свой файл" для выбора и загрузки файла MIM_Scheme.xml
+    - Или нажмите "Загрузить демо-файл" для загрузки демонстрационного файла
+
+2. **Просмотр 3D-модели**
+    - Используйте мышь для вращения камеры (левая кнопка)
+    - Прокрутка колеса мыши - изменение масштаба
+    - Правая кнопка мыши - перемещение камеры
+
+3. **Управление видом**
+    - Кнопка "Сбросить вид" возвращает камеру в исходное положение
+    - Кнопка "Загрузить другой файл" возвращает к экрану загрузки
+
+4. **Просмотр информации**
+    - Слева отображается статистика о количестве элементов в модели
+    - Список горизонтов с цветовой маркировкой позволяет идентифицировать различные уровни шахты
+
+## Структура кода
+
+```
+src/
+├── components/            # React-компоненты
+│   ├── mine/              # Компоненты для визуализации шахты
+│   │   ├── MineControls.tsx
+│   │   ├── MineModel.tsx
+│   │   ├── MineStatistics.tsx
+│   │   └── HorizonsList.tsx
+│   ├── ui/                # UI компоненты
+│   │   └── Button.tsx     # Переиспользуемый компонент кнопки
+│   ├── FileUploader.tsx   # Компонент загрузки файла
+│   ├── MineRenderer.tsx   # Компонент 3D-рендеринга
+│   └── MineVisualization.tsx # Корневой компонент визуализации
+├── hooks/                 # Пользовательские React-хуки
+│   ├── useCreateMineModel.ts
+│   └── useThreeScene.ts
+├── models/                # Типы и интерфейсы
+│   └── types.ts
+├── store/                 # MobX-хранилища
+│   ├── MineStore.ts
+│   └── StoreContext.tsx
+├── utils/                 # Утилиты и вспомогательные функции
+│   ├── threeCleanup.ts    # Очистка ресурсов Three.js
+│   ├── threeHelpers.ts    # Вспомогательные функции для Three.js
+│   └── xmlParser.ts       # Парсинг XML-файлов
+├── App.tsx                # Корневой компонент приложения
+└── main.tsx               # Точка входа в приложение
+```
+
+## Лицензия
+
+MIT
