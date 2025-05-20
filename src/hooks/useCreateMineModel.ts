@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
 import { useMineStore } from '../store/StoreContext';
-import { createTunnel, HORIZON_COLORS, HorizonInfo } from '../utils/threeHelpers';
+import {createTunnel, HORIZON_COLORS, HorizonInfo, MineElementInfo} from '../utils/threeHelpers';
 import { removeObjectByName } from '../utils/threeCleanup';
-import {Horizon, ModelData, Node} from "../models/types";
+import {Excavation, Horizon, ModelData, Node} from "../models/types";
 import {MineStore} from "../store/MineStore";
 
 interface UseCreateMineModelProps {
@@ -28,6 +28,8 @@ export function useCreateMineModel({ scene, modelData }: UseCreateMineModelProps
         mineGroup.name = 'mineGroup';
         scene.add(mineGroup);
 
+        // Создаем выработки
+        createExcavations(mineGroup, center, mineStore);
         // Создаем горизонты и туннели
         createHorizons(mineGroup, center, mineStore);
 
@@ -79,6 +81,48 @@ function createHorizons(parentGroup: THREE.Group, center: THREE.Vector3, mineSto
 
     return horizonInfoMap;
 }
+
+// Вспомогательная функция для создания выработок
+function createExcavations(parentGroup: THREE.Group, center: THREE.Vector3, mineStore: MineStore): Record<string, MineElementInfo> {
+    const excavationInfoMap: Record<string, MineElementInfo> = {};
+    const excavations = Array.from(mineStore.excavations.values());
+
+    excavations.forEach((excavation: Excavation, index: number) => {
+        if (!excavation.Sections) return;
+
+        const sectionIds = excavation.Sections.split(',').filter(id => id.trim() !== '');
+        const excavationColor = HORIZON_COLORS[index % HORIZON_COLORS.length];
+
+        // Создаем группу для выработки
+        const excavationGroup = new THREE.Group();
+        excavationGroup.name = `Excavation_${excavation.Id}`;
+        parentGroup.add(excavationGroup);
+
+        // Инициализируем информацию о выработке
+        excavationInfoMap[excavation.Id] = {
+            name: excavation.Name,
+            excavationType: excavation.ExcavationType,
+            color: excavationColor,
+            sectionsTotal: sectionIds.length,
+            sectionsValid: 0
+        };
+
+        // Создаем секции для выработки
+        const { valid, invalid } = createSections(
+            excavationGroup,
+            sectionIds,
+            excavationColor,
+            center,
+            mineStore,
+            excavationInfoMap[excavation.Id]
+        );
+
+        console.log(`Выработка ${excavation.Name}: Отрисовано ${valid} секций, пропущено ${invalid} секций`);
+    });
+
+    return excavationInfoMap;
+}
+
 
 // Вспомогательная функция для создания секций
 function createSections(

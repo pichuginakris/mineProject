@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import MineStatistics from './MineStatistics';
 import HorizonsList from './HorizonsList';
 import Button from '../ui/Button';
+import ExcavationsList from "./ExcavationList";
 
 interface MineControlsProps {
     onBack: () => void;
@@ -17,6 +18,8 @@ const MineControls: React.FC<MineControlsProps> = observer(({ onBack, onResetVie
 
             {/* Горизонты */}
             <HorizonsList />
+
+            <ExcavationsList/>
 
             {/* Кнопки */}
             <div className="flex justify-between gap-2">

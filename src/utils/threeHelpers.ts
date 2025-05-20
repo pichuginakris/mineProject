@@ -23,14 +23,20 @@ export const HORIZON_COLORS = [
     0x25c9d0  // сине-зеленый
 ];
 
-// Интерфейс для хранения информации о горизонтах
-export interface HorizonInfo {
+export interface MineElementInfo {
+    // Общие свойства
     name: string;
-    altitude: number;
     color: number;
     sectionsTotal: number;
     sectionsValid: number;
+
+    // Опциональные свойства для горизонтов
+    altitude?: number;
+    // Опциональные свойства для выработок
+    excavationType?: string;
 }
+
+export type HorizonInfo = MineElementInfo;
 
 // Функция настройки базовой сцены Three.js
 export function setupScene(mountElement: HTMLDivElement): {

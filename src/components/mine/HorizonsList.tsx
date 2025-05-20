@@ -9,7 +9,7 @@ const HorizonsList: React.FC = observer(() => {
     return (
         <div className="mb-4">
             <p className="font-semibold text-cyan-200 mb-4 text-lg">Горизонты:</p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4  max-h-64 overflow-y-auto">
                 {mineStore.horizons.map((horizon, index) => (
                     <div
                         key={horizon.Id}
